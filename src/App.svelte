@@ -18,6 +18,8 @@
     Check out <a href="https://github.com/sveltejs/kit#readme">SvelteKit</a> for
     the officially supported framework, also powered by Vite!
   </p>
+
+  <iframe width="600" height="4500" src="https://datastudio.google.com/embed/reporting/d2b91d4e-5a3f-4652-b2de-7161010c9113/page/BcHmC" frameborder="0" style="border:0" allowfullscreen></iframe>
 </main>
 
 <style>
