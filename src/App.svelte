@@ -5,6 +5,7 @@
   import { getAccountIdentifier } from "./utils/utils";
   import nft_idl from "./utils/nft.did";
   import { onMount } from "svelte";
+  import { canisters } from "./utils/canisters.js"
 
   const ic_agent = new HttpAgent({ host: "https://boundary.ic0.app/" });
     let readActorCache = {}
@@ -30,7 +31,7 @@
 
   const getBalance = async () => {
     console.log("Get transactions")
-
+    console.log(canisters)
     //const publicKey = await window.ic.plug.requestConnect();
 
     // const connected = await window.ic.plug.isConnected();
@@ -44,13 +45,18 @@
     // }
     // const principalId = await window.ic.plug.getPrincipal();
 
-    let ledger = getReadActor('oeee4-qaaaa-aaaak-qaaeq-cai', nft_idl);
-    //let account = getAccountIdentifier(principalId);
+    for (var c in canisters){
+      console.log("Getting data for canister: " + canisters[c].name)
+      let ledger = getReadActor(canisters[c].id, nft_idl);
+      //let account = getAccountIdentifier(principalId);
 
-    let trans = await ledger.transactions();
-    console.log(trans)
-    transactions = trans;
-    return trans;
+      let trans = await ledger.transactions();
+      console.log(trans)
+      //transactions = trans;
+      transactions = transactions.push(trans)
+      //console.log(transactions)
+    }
+    return true;
 }
 
 onMount(getBalance)
