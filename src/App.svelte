@@ -1,7 +1,61 @@
 <script>
   import logo from './assets/svelte.png'
   import Counter from './lib/Counter.svelte'
+  import { Actor, HttpAgent } from "@dfinity/agent";
+  import { getAccountIdentifier } from "./utils/utils";
+  import nft_idl from "./utils/nft.did";
+  import { onMount } from "svelte";
+
+  const ic_agent = new HttpAgent({ host: "https://boundary.ic0.app/" });
+    let readActorCache = {}
+
+    let tokens = 0;
+    var loading = false;
+
+    var transactions = []
+
+    function getReadActor(cid, idl) {
+        if (cid in readActorCache)
+            return readActorCache[cid]
+
+        const actor = Actor.createActor(idl, {
+            agent: ic_agent,
+            canisterId: cid,
+        });
+
+        readActorCache[cid] = actor;
+
+        return actor;
+    }
+
+  const getBalance = async () => {
+    console.log("Get transactions")
+
+    //const publicKey = await window.ic.plug.requestConnect();
+
+    // const connected = await window.ic.plug.isConnected();
+
+    // if (!connected)  {
+    //     const publicKey = await window.ic.plug.requestConnect({ 
+    //         //host: 'http://127.0.0.1',
+    //         whitelist: ['rno2w-sqaaa-aaaaa-aaacq-cai','l53cn-iiaaa-aaaah-qcwia-cai'],
+    //         timeout: 50000
+    //     })
+    // }
+    // const principalId = await window.ic.plug.getPrincipal();
+
+    let ledger = getReadActor('oeee4-qaaaa-aaaak-qaaeq-cai', nft_idl);
+    //let account = getAccountIdentifier(principalId);
+
+    let trans = await ledger.transactions();
+    console.log(trans)
+    transactions = trans;
+    return trans;
+}
+
+onMount(getBalance)
 </script>
+
 
 <main>
   <img src={logo} alt="Svelte Logo" />
@@ -18,6 +72,10 @@
     Check out <a href="https://github.com/sveltejs/kit#readme">SvelteKit</a> for
     the officially supported framework, also powered by Vite!
   </p>
+
+  {#each transactions as t }
+    <div>{t.time}, {t.price}</div>
+  {/each}
 
 </main>
 
