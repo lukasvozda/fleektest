@@ -8,12 +8,14 @@
   import { canisters } from "./utils/canisters.js"
 
   const ic_agent = new HttpAgent({ host: "https://boundary.ic0.app/" });
-    let readActorCache = {}
+  let readActorCache = {}
 
-    let tokens = 0;
-    var loading = false;
+  let tokens = 0;
+  var loading = false;
 
-    var transactions = []
+  var transactions = []
+
+  let transCount = 0;
 
     function getReadActor(cid, idl) {
         if (cid in readActorCache)
@@ -45,17 +47,44 @@
     // }
     // const principalId = await window.ic.plug.getPrincipal();
 
-    for (var c in canisters){
-      console.log("Getting data for canister: " + canisters[c].name)
-      let ledger = getReadActor(canisters[c].id, nft_idl);
-      //let account = getAccountIdentifier(principalId);
+
+//     let ledger = getReadActor("oeee4-qaaaa-aaaak-qaaeq-cai", nft_idl);
+//       //let account = getAccountIdentifier(principalId);
+
+//       let trans = await ledger.transactions();
+//       console.log(trans)
+//       transactions = trans;
+//       //transactions = transactions.push(trans)
+//       //console.log(transactions)
+//     return trans;
+// }
+
+    const getTransactions = async (canister) => {
+      console.log("Getting data for canister: " + canister)
+      let ledger = getReadActor(canister, nft_idl);
+
 
       let trans = await ledger.transactions();
-      console.log(trans)
-      //transactions = trans;
-      transactions = transactions.push(trans)
-      //console.log(transactions)
+      //console.log(trans)
+
+      transactions = transactions.concat(trans)
+      transCount = transactions.length
+      console.log("Canister: " + canister + " " + "done!")
+
     }
+
+    for (var c in canisters){
+      // console.log("Getting data for canister: " + canisters[c].name + " " + canisters[c].id)
+      // let ledger = getReadActor(canisters[c].id, nft_idl);
+
+      getTransactions(canisters[c].id)
+      // let trans = await ledger.transactions();
+      // console.log(trans)
+
+      // transactions = transactions.concat(trans)
+
+    }
+    //console.log(transactions)
     return true;
 }
 
@@ -78,9 +107,10 @@ onMount(getBalance)
     Check out <a href="https://github.com/sveltejs/kit#readme">SvelteKit</a> for
     the officially supported framework, also powered by Vite!
   </p>
+  <h1># {transCount}</h1>
 
-  {#each transactions as t }
-    <div>{t.time}, {t.price}</div>
+  {#each transactions as t, index }
+    <div>{index}, {t.time}, {t.price}</div>
   {/each}
 
 </main>
